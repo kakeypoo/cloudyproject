@@ -36,17 +36,19 @@ class Screen():
   def __init__(self, x, y, text):
     self.__x_val = x
     self.__y_val = y
-    self.__background = 
-    self.__text = text
+  #  self.__background = 
+ #   self.__text = text
     
-  #Accessors  
+  ## Accessors ##  
   def limit_x(self):
     return self.__x_val
   def limit_y(self):
     return self.__y_val
   
   
-
+  class Window():
+    def __init__(self):
+      
   
 
   
