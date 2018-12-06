@@ -1,10 +1,10 @@
 from pygame import *
-#hello
+
 class Sprite():
 
   def __init__(self, x, y, speed):
     #image
-    self.__sprite_image = 
+    self.__sprite_image = pygame.image.load('cook.png')
     
     #location
     self.__sprite_x = x
