@@ -5,7 +5,9 @@ pg.init()
 
 #window
 win = pg.display.set_mode((1000, 1000))
+win.fill((0, 0, 0))
 #constants
+
 COOK = pg.image.load('cook.png')
 BACON = pg.image.load('Bbacon.png')
 DONUT = pg.image.load('Bdonut.png')
@@ -33,22 +35,14 @@ class Player:
     self.__h = h
     self.__vel = vel 
     self.__pic = pic
-##  def getpic(self):
-##    return self.__pic
-##  def getx(self):
-##    return self.__x
-##  def gety(self):
-##    return self.__y
-##  def getw(self):
-##    return self.__w
-##  def geth(self):
-##    return self.__h
-##  def getvel(self):
-##    return self.__vel
-  
-  def draw(self, win):
+
+  def create(self, win):
     cook = pg.transform.scale(self.__pic, (self.__w, self.__h))
     win.blit(cook, (self.__x, self.__y))
+  def get_x(self):
+    return self.__x
+  def get_vel(self):
+    return self.__vel
   
 class Food:
   def __init__(self, pic, x, y, w, h):
@@ -58,38 +52,54 @@ class Food:
     self.__h = h
     self.__pic = pic
     
-  def draw(self, win):
+  def create(self, win):
     food = pg.transform.scale(self.__pic, (self.__w, self.__h))
     win.blit(food, (self.__x, self.__y))
                               
-#accessors 
-##  def getfoodx(self):
-##    return self.__x
-##  def getfoody(self):
-##    return self.__y
-##  def getfoodw(self):
-##    return self.__w
-##  def getfoodh(self):
-##    return self.__h
-##  def getfoodpic(self):
-##    return self.__pic
-
-cook = Player(COOK, 200, 400, 50, 50, 8)
-bacon = Food(BACON, 200, 600, 50, 50)
+    
+XVAL = 200
+YVAL = 400
+VELVAL = 8
 
 run = True
 while run:
-  cook.draw(win)
-  bacon.draw(win)
   
+  cook = Player(COOK, XVAL, YVAL, 50, 50, VELVAL)
+  bacon = Food(BACON, 200, 600, 50, 50)
+  donut = Food(DONUT, 200, 500, 50, 50)
+  fries = Food(FRIES, 200, 450, 50, 50)
+  hotdog = Food(HOTDOG, 200, 300, 50, 50)
+  icecream = Food(ICECREAM, 200, 200, 50, 50)
+  pizza = Food(PIZZA, 200, 100, 50, 50)
+  popcorn = Food(POPCORN, 200, 600, 50, 50)
+  apple = Food(APPLE, 300, 600, 50, 50)
+  avocado = Food(AVOCADO, 400, 600, 50, 50)
+  broccoli = Food(BROCCOLI, 500, 600, 50, 50)
+  carrot = Food(CARROT, 200, 600, 50, 50)
+  pineapple = Food(PINEAPPLE, 700, 600, 50, 50)
+  strawberry = Food(STRAWBERRY, 800, 600, 50, 50)
+  watermelon = Food(WATERMELON, 900, 600, 50, 50)
+
+
   for event in pg.event.get():
     if event.type == pg.QUIT:
+      run = False
       pg.quit()
       sys.exit()
 
+  keys = pg.key.get_pressed()
+  if keys[pg.K_RIGHT]:
+    if XVAL < 1000 - 50 - 8:
+      XVAL += VELVAL
+  elif keys[pg.K_LEFT]:
+    if XVAL > VELVAL:
+      XVAL -= VELVAL
+
+  win.fill((0,0,0))
+  
+  cook.create(win)
+  bacon.create(win)
+  donut.create(win)
+  fries.create(win)
+
   pg.display.flip()
-
-
-
-    
-    
