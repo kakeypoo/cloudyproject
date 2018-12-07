@@ -33,16 +33,61 @@ class Player:
     self.__h = h
     self.__vel = vel 
     self.__pic = pic
-
+##  def getpic(self):
+##    return self.__pic
+##  def getx(self):
+##    return self.__x
+##  def gety(self):
+##    return self.__y
+##  def getw(self):
+##    return self.__w
+##  def geth(self):
+##    return self.__h
+##  def getvel(self):
+##    return self.__vel
+  
+  def draw(self, win):
+    cook = pg.transform.scale(self.__pic, (self.__w, self.__h))
+    win.blit(cook, (self.__x, self.__y))
+  
 class Food:
   def __init__(self, pic, x, y, w, h):
-    self.__x = x
+    self.__x = x #blitting
     self.__y = y
-    self.__w = w
+    self.__w = w #transforming
     self.__h = h
     self.__pic = pic
+    
+  def draw(self, win):
+    food = pg.transform.scale(self.__pic, (self.__w, self.__h))
+    win.blit(food, (self.__x, self.__y))
+                              
+#accessors 
+##  def getfoodx(self):
+##    return self.__x
+##  def getfoody(self):
+##    return self.__y
+##  def getfoodw(self):
+##    return self.__w
+##  def getfoodh(self):
+##    return self.__h
+##  def getfoodpic(self):
+##    return self.__pic
 
+cook = Player(COOK, 200, 400, 50, 50, 8)
+bacon = Food(BACON, 200, 600, 50, 50)
 
+run = True
+while run:
+  cook.draw(win)
+  bacon.draw(win)
+  
+  for event in pg.event.get():
+    if event.type == pg.QUIT:
+      pg.quit()
+      sys.exit()
+
+  pg.display.flip()
 
 
 
