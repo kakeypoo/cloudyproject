@@ -4,7 +4,7 @@ class Sprite():
 
   def __init__(self, x, y, speed):
     #image
-    self.__sprite_image = pygame.image.load('cook.png')
+    self.__sprite_image = pygame.image.load('PNGs/cook.png')
     
     #location
     self.__sprite_x = x
