@@ -1,0 +1,90 @@
+import pygame as pg
+import sys
+import random
+pg.init()
+
+win = pg.display.set_mode((600,350))
+
+COOK = pg.image.load('cook.png')
+BACON = pg.image.load('Bbacon.png')
+DONUT = pg.image.load('Bdonut.png')
+FRIES = pg.image.load('Bfries.png')
+HOTDOG = pg.image.load('Bhotdog.png')
+ICECREAM = pg.image.load('Bicecream.png')
+PIZZA = pg.image.load('Bpizza.png')
+POPCORN = pg.image.load('Bpopcorn.png')
+APPLE = pg.image.load('apple.png')
+AVOCADO = pg.image.load('avocado.png')
+BROCCOLI = pg.image.load('broccoli.png')
+CARROT = pg.image.load('carrot.png')
+PINEAPPLE = pg.image.load('pineapple.png')
+STRAWBERRY = pg.image.load('strawberry.png')
+WATERMELON  = pg.image.load('watermelon.png')
+
+clock = pg.time.Clock()
+
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 350
+##SPRITE_X = 
+##SPRITE_Y =
+SPRITE_WIDTH = 44
+SPRITE_HEIGHT = 44
+VELO = 8
+BLACK = (0, 0, 0)
+
+win = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+win.fill(BLACK)
+
+class Sprite(pg.sprite.Sprite):
+  def __init__(self, pic, x, y, w, h, vel):
+    pg.sprite.Sprite.__init__(self)
+    self.image = pic
+    self.rect = self.image.get_rect()
+    self.x = x 
+    self.y = y
+    self.rect.topleft = [self.x, self.y]
+    self.w = w
+    self.h = h
+    self.vel = vel
+
+  def update(self):
+    self.image = pg.transform.scale(self.image, (self.w, self.h))
+    win.blit(self.image, (self.x, self.y))
+    
+  def falling(self):
+    self.y += random.randint(1, 10)
+    win.blit(self.image, (self.x, self.y))
+    
+  def moveleft(self):
+ #   self.x += self.vel
+    self.x -= self.vel
+    win.blit(self.image, (self.x, self.y))
+    
+#Create sprite food
+#Create player sprite
+FOODGROUP = pg.sprite.Group()
+bacon = Sprite(BACON, 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+FOODGROUP.add(bacon)
+cook = Sprite(COOK, 278, 306, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+FOODGROUP.add(cook)
+
+run = True
+while run:
+  clock.tick(60)
+  
+  for event in pg.event.get(): #DON't CHANGE
+    if event.type == pg.QUIT:
+      run = False
+      pg.quit()
+      sys.exit()
+
+  FOODGROUP.update()
+  bacon.falling()
+  pg.display.update()
+  
+  keys = pg.key.get_pressed()
+  if keys[pg.K_LEFT]:
+    cook.moveleft()
+    pg.display.update()
+    
+  win.fill(BLACK)
