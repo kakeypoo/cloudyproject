@@ -1,0 +1,176 @@
+import pygame as pg
+import sys
+import random
+pg.init()
+
+win = pg.display.set_mode((600,350))
+
+COOK = pg.image.load('cook.png')
+
+BACON = pg.image.load('Bbacon.png')
+DONUT = pg.image.load('Bdonut.png')
+FRIES = pg.image.load('Bfries.png')
+HOTDOG = pg.image.load('Bhotdog.png')
+ICECREAM = pg.image.load('Bicecream.png')
+PIZZA = pg.image.load('Bpizza.png')
+POPCORN = pg.image.load('Bpopcorn.png')
+APPLE = pg.image.load('apple.png')
+AVOCADO = pg.image.load('avocado.png')
+BROCCOLI = pg.image.load('broccoli.png')
+CARROT = pg.image.load('carrot.png')
+PINEAPPLE = pg.image.load('pineapple.png')
+STRAWBERRY = pg.image.load('strawberry.png')
+WATERMELON  = pg.image.load('watermelon.png')
+
+
+FOODLIST = [BACON, DONUT, FRIES, HOTDOG, ICECREAM, PIZZA, POPCORN, APPLE, \
+            AVOCADO, BROCCOLI, CARROT, PINEAPPLE, STRAWBERRY, WATERMELON]
+
+
+CLOCK = pg.time.Clock()
+
+############## NUMBER CONSTANTS  #######################################
+
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 350
+##SPRITE_X = 
+##SPRITE_Y =
+SPRITE_WIDTH = 44
+SPRITE_HEIGHT = 44
+VELO = 10
+BLACK = (0, 0, 0)
+
+win = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+win.fill(BLACK)
+
+
+
+#########################################################
+##############   CLASSES  ###############################
+##############            ###############################
+##############            ###############################
+
+
+class Sprite(pg.sprite.Sprite):
+  def __init__(self, pic, x, y, w, h, vel):
+    pg.sprite.Sprite.__init__(self)
+    self.image = pic
+    self.rect = self.image.get_rect()
+    self.x = x 
+    self.y = y
+    self.rect.topleft = self.x, self.y
+    self.w = w
+    self.h = h
+    self.vel = vel
+
+  def update(self):
+    self.image = pg.transform.scale(self.image, (self.w, self.h))
+    self.rect.topleft = self.x, self.y
+    win.blit(self.image, (self.x, self.y))
+    
+  def falling(self):
+    self.y += random.randint(1, 10)
+    if self.y > SCREEN_HEIGHT:
+      self.x = random.randint(1, 506)
+      self.y = 0
+    self.rect.topleft = self.x, self.y
+    win.blit(self.image, (self.x, self.y))
+    
+  def moveleft(self):
+    self.x -= self.vel
+    self.rect.topleft = self.x, self.y
+    win.blit(self.image, (self.x, self.y))
+    
+  def moveright(self):
+    self.x += self.vel
+    self.rect.topleft = self.x, self.y
+    win.blit(self.image, (self.x, self.y))
+    
+  def canmoveleft(self):
+    return self.x > self.vel
+  
+  def canmoveright(self):
+    return self.x < SCREEN_WIDTH - self.vel - self.w
+  
+  def gototop(self):
+    self.x = random.randint(1, 506)
+    self.y = 0
+    self.rect.topleft = self.x, self.y
+    win.blit(self.image, (self.x, self.y))
+
+
+#########################################################
+##############  OBJECTS/   ###############################
+##############  GROUPS     ###############################
+##############             ###############################
+    
+#groups
+COOKGROUP = pg.sprite.Group()
+SUSTENANCE = pg.sprite.Group()
+ALLSPRITES = pg.sprite.Group()
+
+#food sprites
+food1 = Sprite(FOODLIST[random.randint(0, 13)], 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+food2 = Sprite(FOODLIST[random.randint(0, 13)], 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+food3 = Sprite(FOODLIST[random.randint(0, 13)], 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+food4 = Sprite(FOODLIST[random.randint(0, 13)], 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+#cook sprite
+cook = Sprite(COOK, 278, 306, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+
+#ALL SPRITES
+ALLSPRITES.add(cook)
+ALLSPRITES.add(food1)
+ALLSPRITES.add(food2)
+ALLSPRITES.add(food3)
+ALLSPRITES.add(food4)
+
+#JUST THE FOOD
+SUSTENANCE.add(food1)
+SUSTENANCE.add(food2)
+SUSTENANCE.add(food3)
+SUSTENANCE.add(food4)
+
+#JUST THE COOK
+COOKGROUP.add(cook)
+
+#########################################################
+##############  MAIN LOOP  ###############################
+##############             ###############################
+##############             ###############################
+
+run = True
+while run:
+  CLOCK.tick(60)
+  
+  for event in pg.event.get(): #DON't CHANGE
+    if event.type == pg.QUIT:
+      run = False
+      pg.quit()
+      sys.exit()
+
+  ALLSPRITES.update()
+  food1.falling()
+  food2.falling()
+  food3.falling()
+  food4.falling()
+  pg.display.update()
+  
+  spr = pg.sprite.spritecollideany(cook, SUSTENANCE, collided = None)
+  if spr:
+    spr.gototop()
+    pg.display.update()
+    #change health
+
+  keys = pg.key.get_pressed()
+  if keys[pg.K_LEFT]:
+    if cook.canmoveleft():
+      cook.moveleft()
+      pg.display.update()
+      
+  if keys[pg.K_RIGHT]:
+    if cook.canmoveright():
+      cook.moveright()
+      pg.display.update()
+
+      
+  win.fill(BLACK)
