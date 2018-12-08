@@ -1,11 +1,9 @@
 import pygame as pg
 import sys
+import random
 
 pg.init()
 
-#window
-win = pg.display.set_mode((1000, 1000))
-win.fill((0, 0, 0))
 #constants
 
 COOK = pg.image.load('cook.png')
@@ -24,82 +22,154 @@ PINEAPPLE = pg.image.load('pineapple.png')
 STRAWBERRY = pg.image.load('strawberry.png')
 WATERMELON  = pg.image.load('watermelon.png')
 
+#TIME STUFF
 clock = pg.time.Clock()
 FPS = 40
 
-class Player:
-  def __init__(self, pic, x, y, w, h, vel): #x, y position w, h transform scale
-    self.__x = x #blitting
+#NUMBER CONSTANTS
+#COOK
+X_COORD = 500
+Y_COORD = 977
+FOOD_Y = -23
+
+#SCREEN
+WIDTH = 1000
+HEIGHT = 1000
+
+#ALL SPRITES
+W = 46
+H = 46
+VELO = 8
+
+FOODGROUP = pg.sprite.Group()
+
+#window
+win = pg.display.set_mode((WIDTH, HEIGHT))
+win.fill((0, 0, 0))
+
+
+'''CLASSES'''
+
+class Sprite(pg.sprite.Sprite):
+  def __init__(self, pic, x, y, w, h, vel, win):
+    pg.sprite.Sprite.__init__(self)
+    self.__image = pic
+    self.__rect = self.__image.get_rect()
+    self.__rect.center = [x, y] 
+    self.__x = x
     self.__y = y
-    self.__w = w #transforming
+    self.__w = w
     self.__h = h
-    self.__vel = vel 
-    self.__pic = pic
-
-  def create(self, win):
-    cook = pg.transform.scale(self.__pic, (self.__w, self.__h))
-    win.blit(cook, (self.__x, self.__y))
-  def get_x(self):
-    return self.__x
-  def get_vel(self):
-    return self.__vel
-  
-class Food:
-  def __init__(self, pic, x, y, w, h):
-    self.__x = x #blitting
-    self.__y = y
-    self.__w = w #transforming
-    self.__h = h
-    self.__pic = pic
+    self.__vel = vel
+    self.__win = win
     
-  def create(self, win):
-    food = pg.transform.scale(self.__pic, (self.__w, self.__h))
-    win.blit(food, (self.__x, self.__y))
-                              
+  def resize(self): #resizes 
+    self.__image = pg.transform.scale(self.__image, (self.__w, self.__h))
+ #   self.__win.blit(self.__image, (self.__x, self.__y))
+  def move_player_left(self):
+    if self.__x > self.__vel:
+      self.__x -= self.__vel
+      win.blit(self.__image, (self.__x, self.__y))
+      pg.display.update()
+      
+  def move_player_right(self):
+    if self.__x < WIDTH - self.__w - self.__vel:
+      self.__y -= self.__vel
+      win.blit(self.__image, (self.__x, self.__y))
+      pg.display.update()
     
-XVAL = 200
-YVAL = 400
-VELVAL = 8
+  def move_food(self):
+    self.__rect.y += 2
+    if self.__rect.top > 1000: 
+      self.__rect.bottom = 0
+      win.blit(self.__image, (self.__x, self.__y))
+      pg.display.update()
+ 
+##  def create(self, win): 
+##    win.blit(self.__image, (self.__x, self.__y))
+##    pg.display.update()
+##    
+##  def move_player_left(self):
+##    if self.__x > self.__vel:
+##      self.__x -= self.__vel
+##      
+##  def move_player_right(self):
+##    if self.__x < WIDTH - self.__w - self.__vel:
+##      self.__y -= self.__vel
+##      
+##  def move_food(self):
+##    self.__rect.y += 2
+##    if self.__rect.top > 1000: 
+##      self.__rect.bottom = 0
 
-run = True
-while run:
+   
+##class Health:
+##  def __init__(self):
+##    self.__
+
+    
+#FUNCTIONS
+
+
+def generate_x_val():
+  x_start = random.randint(23, 977)
+  return x_start
+                       
+def create_sprites():
+  cook = Sprite(COOK, X_COORD, Y_COORD, W, H, VELO, win)
   
-  cook = Player(COOK, XVAL, YVAL, 50, 50, VELVAL)
-  bacon = Food(BACON, 200, 600, 50, 50)
-  donut = Food(DONUT, 200, 500, 50, 50)
-  fries = Food(FRIES, 200, 450, 50, 50)
-  hotdog = Food(HOTDOG, 200, 300, 50, 50)
-  icecream = Food(ICECREAM, 200, 200, 50, 50)
-  pizza = Food(PIZZA, 200, 100, 50, 50)
-  popcorn = Food(POPCORN, 200, 600, 50, 50)
-  apple = Food(APPLE, 300, 600, 50, 50)
-  avocado = Food(AVOCADO, 400, 600, 50, 50)
-  broccoli = Food(BROCCOLI, 500, 600, 50, 50)
-  carrot = Food(CARROT, 200, 600, 50, 50)
-  pineapple = Food(PINEAPPLE, 700, 600, 50, 50)
-  strawberry = Food(STRAWBERRY, 800, 600, 50, 50)
-  watermelon = Food(WATERMELON, 900, 600, 50, 50)
-
-
-  for event in pg.event.get():
-    if event.type == pg.QUIT:
-      run = False
-      pg.quit()
-      sys.exit()
-
-  keys = pg.key.get_pressed()
-  if keys[pg.K_RIGHT]:
-    if XVAL < 1000 - 50 - 8:
-      XVAL += VELVAL
-  elif keys[pg.K_LEFT]:
-    if XVAL > VELVAL:
-      XVAL -= VELVAL
-
-  win.fill((0,0,0))
+  #Use for loop add to list add to all sprites group
+  bacon = Sprite(BACON, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  donut = Sprite(DONUT, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  fries = Sprite(FRIES, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  hotdog = Sprite(HOTDOG, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  icecream = Sprite(ICECREAM, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  pizza = Sprite(PIZZA, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  popcorn = Sprite(POPCORN, generate_x_val(), FOOD_Y, W, H, VELO, win)
   
-  cook.create(win)
-  bacon.create(win)
-  donut.create(win)
-  fries.create(win)
+  apple = Sprite(APPLE, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  avocado = Sprite(AVOCADO, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  broccoli = Sprite(BROCCOLI, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  carrot = Sprite(CARROT, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  pineapple = Sprite(PINEAPPLE, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  strawberry = Sprite(STRAWBERRY, generate_x_val(), FOOD_Y, W, H, VELO, win)
+  watermelon = Sprite(WATERMELON, generate_x_val(), FOOD_Y, W, H, VELO, win)
 
-  pg.display.flip()
+  sprite_list = [cook, bacon, donut, fries, hotdog, icecream, pizza, popcorn, apple, \
+               avocado, broccoli, carrot, pineapple, strawberry, watermelon]
+
+  return sprite_list
+
+def main():
+  #MAIN LOOP
+  run = True
+  while run:
+
+    for event in pg.event.get(): #DON't CHANGE
+      if event.type == pg.QUIT:
+        run = False
+        pg.quit()
+        sys.exit()
+        
+    food_list = create_sprites()
+    #Key stuff
+    keys = pg.key.get_pressed()
+    
+    if keys[pg.K_LEFT]:
+      food_list[0].move_player_left()
+      pg.display.update()
+    elif keys[pg.K_RIGHT]:
+      food_list[0].move_player_right()
+      pg.display.update()
+      
+    win.fill((0, 0, 0))
+    
+    for food in food_list:
+      food.resize()
+ #     food.create(win)
+      if not(food_list[0]):
+        food.move_food()
+      
+    pg.display.flip()
+
+main()
