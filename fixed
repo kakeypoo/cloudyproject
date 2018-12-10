@@ -1,0 +1,289 @@
+import pygame as pg
+import sys
+import random
+
+pg.init()
+pg.font.init()
+
+pg.display.set_caption('Catch the food!')
+FONT = pg.font.Font('freesansbold.ttf', 30)
+
+COOK = pg.image.load('rose.png')
+
+beach = pg.image.load('beach3.png')
+
+BACON = pg.image.load('Bbacon.png')
+DONUT = pg.image.load('Bdonut.png')
+FRIES = pg.image.load('Bfries.png')
+HOTDOG = pg.image.load('Bhotdog.png')
+ICECREAM = pg.image.load('Bicecream.png')
+PIZZA = pg.image.load('Bpizza.png')
+POPCORN = pg.image.load('Bpopcorn.png')
+APPLE = pg.image.load('apple.png')
+AVOCADO = pg.image.load('avocado.png')
+BROCCOLI = pg.image.load('broccoli.png')
+CARROT = pg.image.load('carrot.png')
+PINEAPPLE = pg.image.load('pineapple.png')
+STRAWBERRY = pg.image.load('strawberry.png')
+WATERMELON  = pg.image.load('watermelon.png')
+
+
+FOODLIST = [BACON, DONUT, FRIES, HOTDOG, ICECREAM, PIZZA, POPCORN, APPLE, \
+            AVOCADO, BROCCOLI, CARROT, PINEAPPLE, STRAWBERRY, WATERMELON]
+
+
+CLOCK = pg.time.Clock()
+
+############## NUMBER CONSTANTS  #######################################
+
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 350
+##SPRITE_X = 
+##SPRITE_Y =
+SPRITE_WIDTH = 44
+SPRITE_HEIGHT = 44
+VELO = 10
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+WHITE = (255, 255, 255)
+YELLOW = (241, 176, 82)
+TEXT = 'GAME OVER'
+SCORETEXT = 'score = '
+win = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+win.blit(beach, (0, 0))
+
+
+
+#########################################################
+##############   CLASSES  ###############################
+##############            ###############################
+##############            ###############################
+
+
+class Sprite(pg.sprite.Sprite):
+  def __init__(self, pic, x, y, w, h, vel):
+    pg.sprite.Sprite.__init__(self)
+    self.image = pic
+    self.rect = self.image.get_rect()
+    self.x = x 
+    self.y = y
+    self.rect.topleft = self.x, self.y
+    self.w = w
+    self.h = h
+    self.vel = vel
+
+  def update(self):
+    self.image = pg.transform.scale(self.image, (self.w, self.h))
+    self.rect.topleft = self.x, self.y
+    win.blit(self.image, (self.x, self.y))
+    
+  def falling(self):
+    self.y += random.randint(1, 10)
+    if self.y > SCREEN_HEIGHT:
+      self.x = random.randint(1, 506)
+      self.y = 0
+    self.rect.topleft = self.x, self.y
+    win.blit(self.image, (self.x, self.y))
+    
+  def moveleft(self):
+    self.x -= self.vel
+    self.rect.topleft = self.x, self.y
+    win.blit(self.image, (self.x, self.y))
+    
+  def moveright(self):
+    self.x += self.vel
+    self.rect.topleft = self.x, self.y
+    win.blit(self.image, (self.x, self.y))
+    
+  def canmoveleft(self):
+    return self.x > self.vel
+  
+  def canmoveright(self):
+    return self.x < SCREEN_WIDTH - self.vel - self.w
+  
+  def gototop(self):
+    self.x = random.randint(1, 506)
+    self.y = 0
+    self.rect.topleft = self.x, self.y
+    win.blit(self.image, (self.x, self.y))
+
+  def hits_ground(self):
+    return self.y == SCREEN_HEIGHT
+
+#health
+
+class Health(pg.sprite.Sprite):   
+  def __init__(self, surface, color, x, y, w, h):
+    pg.sprite.Sprite.__init__(self)
+    self.x = x
+    self.y = y
+    self.w = w
+    self.h = h
+    self.surface = surface
+    self.color = color
+    self.sizeloc = (x, y, w, h) 
+
+  def update(self):
+    pg.draw.rect(win, self.color, self.sizeloc)
+       
+  def decrement(self, w):
+    self.x = self.x
+    self.y = self.y
+    self.h = self.h
+    self.w = w
+    self.sizeloc = (self.x, self.y, self.w, self.h)
+    pg.draw.rect(win, self.color, (self.x, self.y, self.w, self.h))
+  
+
+class TextSurface: #create text surfaces
+  def __init__(self, color, position, text):
+    self.color = color
+    self.position = position
+    self.text = text
+    
+  def createtextsurface(self):
+    textsurface = FONT.render(self.text, False, self.color)
+    win.blit(textsurface, self.position)
+
+  
+#########################################################
+##############  OBJECTS/   ###############################
+##############  GROUPS     ###############################
+##############             ###############################
+
+collisions = 0
+SCORETEXTNUMBER = str(collisions)   
+#groups
+HEALTHBARS = pg.sprite.Group()
+SUSTENANCE = pg.sprite.Group()
+ALLSPRITES = pg.sprite.Group()
+#food sprites
+food1 = Sprite(FOODLIST[random.randint(0, 13)], 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+food2 = Sprite(FOODLIST[random.randint(0, 13)], 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+food3 = Sprite(FOODLIST[random.randint(0, 13)], 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+food4 = Sprite(FOODLIST[random.randint(0, 13)], 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+#cook sprite
+cook = Sprite(COOK, 278, 306, SPRITE_WIDTH, SPRITE_HEIGHT, VELO)
+
+#Text sprites
+gameovermessage = TextSurface(BLACK, (SCREEN_WIDTH/3, SCREEN_HEIGHT/3), TEXT)
+score = TextSurface(BLACK, (10, 10), SCORETEXT)
+scorenumber = TextSurface(BLACK, (130, 10), SCORETEXTNUMBER)
+
+#ALL SPRITES // FIRST SPRITE CLASS
+ALLSPRITES.add(cook)
+ALLSPRITES.add(food1)
+ALLSPRITES.add(food2)
+ALLSPRITES.add(food3)
+ALLSPRITES.add(food4)
+
+#JUST THE FOOD
+SUSTENANCE.add(food1)
+SUSTENANCE.add(food2)
+SUSTENANCE.add(food3)
+SUSTENANCE.add(food4)
+
+
+#########################################################
+##############  MAIN LOOP  ###############################
+##############             ###############################
+##############             ###############################
+
+##collisions = 0
+##SCORETEXTNUMBER = str(collisions)
+x2 = 500
+w2 = 1
+x1 = x2 - w2
+w1 = 90 - w2
+y2 = 10
+y1 = 10
+h2 = 20
+h1 = 20
+
+#HEALTH BARS
+health2 = Health(win, WHITE, x2, y2, w2, h2)
+health1 = Health(win, GREEN, x1, y1, w1, h1)
+HEALTHBARS.add(health2)
+HEALTHBARS.add(health1)
+
+def new_loop():
+  message = True
+  while message:
+    keys = pg.key.get_pressed()
+    win.blit(beach, (0, 0))
+    gameovermessage.createtextsurface()
+    pg.display.update()
+##    x2 = 500
+##    w2 = 1
+##    x1 = x2 - w2
+##    w1 = 90 - w2
+##    y2 = 10
+##    y1 = 10
+##    h2 = 20
+##    h1 = 20
+    pg.time.delay(10000)
+    message = False
+    pg.quit()
+    sys.exit()
+       
+run = True
+while run:
+ # message = False
+  CLOCK.tick(60)
+  keys = pg.key.get_pressed()
+  for event in pg.event.get(): #DON't CHANGE
+    if event.type == pg.QUIT:
+      run = False
+      pg.quit()
+      sys.exit()
+
+  ALLSPRITES.update()
+  food1.falling()
+  food2.falling()
+  food3.falling()
+  food4.falling()
+  HEALTHBARS.update()   #HEALTHHHHHHH!!!!!
+  pg.display.update()
+  
+  spr = pg.sprite.spritecollideany(cook, SUSTENANCE, collided = None)
+
+  if spr:
+    spr.gototop()
+    pg.display.update()
+    collisions += 1
+    SCORETEXTNUMBER = str(collisions)
+    scorenumber = TextSurface(BLACK, (130, 10), SCORETEXTNUMBER)
+    print('collisions = ', collisions)
+    print('SCORETEXTNUMBER =', SCORETEXTNUMBER)
+
+
+  if food1.hits_ground() or food2.hits_ground() or food3.hits_ground() or food4.hits_ground():
+    print('health down')
+    print(collisions)
+    w2 += 20
+    w1 = 90 - w2
+    health2.decrement(w2)
+    health1.decrement(w1)
+    print('w2 =', w2, w1)
+    pg.display.update()
+    while w2 >= 89:
+     # print('you lost')
+      run = False
+      new_loop()
+      
+  if keys[pg.K_LEFT]:
+    if cook.canmoveleft():
+      cook.moveleft()
+      pg.display.update()
+      
+  if keys[pg.K_RIGHT]:
+    if cook.canmoveright():
+      cook.moveright()
+      pg.display.update()
+
+  pg.display.flip()
+  win.blit(beach, (0, 0))
+  score.createtextsurface()
+  scorenumber.createtextsurface()
+
+
